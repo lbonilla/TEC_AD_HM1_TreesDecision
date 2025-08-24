@@ -1,0 +1,3803 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+
+
+% ===== Paquetes base =====
+\usepackage{babel}
+\usepackage{graphicx}
+% para [H]
+% tablas
+\usepackage{subcaption}% subfiguras EDA
+\usepackage{caption}
+\usepackage{listings}% para código
+\usepackage{xcolor}% colores
+% listas personalizadas
+\usepackage{array}% tablas avanzadas
+\usepackage{longtable}% tablas largas
+\usepackage{multirow}% celdas multirow
+\usepackage{url}% URLs
+\usepackage{fancyhdr}% encabezados personalizados
+
+
+
+% ===== Configuración de código =====
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=pythonstyle}
+
+% ===== Dónde buscar imágenes =====
+\graphicspath{{data/}{data/figs_hist/}{figs_hist/}{./}}
+
+% ===== Inclusión segura de imágenes =====
+
+\newcommand{\safeincludegraphics}[2][]{%
+  \IfFileExists{#2}{\includegraphics[#1]{#2}}{\fbox{\texttt{#2 no encontrado}}}%
+}
+
+
+% ===== Datos del informe =====
+\title{%
+    \textbf{Análisis de Datos para Ciberseguridad}\\
+    \large Trabajo Práctico 1 — Árboles de Decisión para Detección de Intrusos\\
+    \small Implementación CART y Análisis con Distancia Jensen-Shannon
+}
+\author{%
+    Deyber Hernández Gonzales\\
+    \texttt{d.hernandez.9@estudiantec.cr}\\
+    \texttt{2025800354}
+    \and
+    Luis Bonilla Hernández\\
+    \texttt{lbonilla@estudiantec.cr}\\
+    \texttt{2023123456}
+}
+\date{    Instituto Tecnológico de Costa Rica\\
+    Escuela de Ingeniería en Computación\\
+    Programa de Ciencias de Datos\\
+    \today
+}
+
+% ===== Encabezados =====
+
+\fancyhf{}
+\rhead{Trabajo Práctico 1 - Ciberseguridad}
+\lhead{TEC - 2025}
+\cfoot{\thepage}
+\end_preamble
+\use_default_options false
+\begin_modules
+enumitem
+\end_modules
+\maintain_unincluded_children no
+\language spanish
+\language_package default
+\inputencoding utf8
+\fontencoding T1
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 1
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize 11
+\spacing single
+\use_hyperref true
+\pdf_bookmarks false
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks true
+\pdf_backref section
+\pdf_pdfusetitle false
+\pdf_quoted_options "linkcolor=blue,urlcolor=blue,citecolor=blue"
+\papersize a4
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 0
+\use_package mhchem 0
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style french
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle fancy
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+maketitle
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+Este trabajo implementa un sistema completo de detección de intrusos utilizando árboles de decisión CART sobre el dataset KDD99.
+ Se desarrolló desde cero una implementación que incluye análisis estadístico descriptivo,
+ cálculo de distancias Jensen-Shannon para selección de características,
+ y construcción de árboles de decisión con validación exhaustiva.
+ Los resultados demuestran la efectividad del enfoque propuesto para distinguir entre tráfico normal y ataques tipo backdoor,
+ alcanzando métricas de rendimiento superiores al 99% en todas las evaluaciones realizadas.
+\end_layout
+
+\begin_layout Abstract
+
+\series bold
+Palabras clave:
+
+\series default
+ Detección de intrusos,
+ árboles de decisión,
+ CART,
+ Jensen-Shannon,
+ KDD99,
+ ciberseguridad.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% ===========================================================
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introducción
+\end_layout
+
+\begin_layout Subsection
+Contexto y Motivación
+\end_layout
+
+\begin_layout Standard
+La detección de intrusiones constituye un componente crítico en la ciberseguridad moderna.
+ Los sistemas de detección de intrusos (IDS) deben ser capaces de distinguir de manera confiable entre tráfico legítimo y patrones maliciosos,
+ manteniendo además interpretabilidad para facilitar la respuesta a incidentes.
+\end_layout
+
+\begin_layout Standard
+Los árboles de decisión emergen como una alternativa especialmente atractiva en este contexto debido a su interpretabilidad inherente,
+ capacidad de manejar datos categóricos y numéricos simultáneamente,
+ y robustez ante valores atípicos.
+ A diferencia de modelos 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+caja negra
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+"
+\end_layout
+
+\end_inset
+
+ como redes neuronales profundas,
+ los árboles proporcionan reglas de decisión explícitas que pueden ser auditadas y validadas por expertos en seguridad.
+\end_layout
+
+\begin_layout Subsection
+Objetivos
+\end_layout
+
+\begin_layout Standard
+El presente trabajo se propone:
+ 
+\end_layout
+
+\begin_layout Enumerate
+Implementar desde cero un algoritmo CART completo utilizando PyTorch para aprovechamiento de GPU 
+\end_layout
+
+\begin_layout Enumerate
+Realizar análisis estadístico exhaustivo del dataset KDD99 mediante momentos estadísticos 
+\end_layout
+
+\begin_layout Enumerate
+Aplicar distancias Jensen-Shannon para cuantificar la separabilidad entre clases 
+\end_layout
+
+\begin_layout Enumerate
+Evaluar el rendimiento del modelo implementado mediante validación cruzada y múltiples particiones 
+\end_layout
+
+\begin_layout Enumerate
+Proponer optimizaciones basadas en el análisis de características más discriminativas 
+\end_layout
+
+\begin_layout Subsection
+Contribuciones
+\end_layout
+
+\begin_layout Standard
+Las principales contribuciones de este trabajo incluyen:
+ 
+\end_layout
+
+\begin_layout Itemize
+Implementación matricial eficiente de CART usando operaciones tensoriales 
+\end_layout
+
+\begin_layout Itemize
+Análisis comparativo de distribuciones mediante histogramas y distancias JS 
+\end_layout
+
+\begin_layout Itemize
+Metodología de evaluación robusta con 10 particiones aleatorias 
+\end_layout
+
+\begin_layout Itemize
+Propuesta de optimización para construcción y evaluación de árboles 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+% ===========================================================
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Marco Teórico
+\end_layout
+
+\begin_layout Subsection
+Dataset KDD99
+\end_layout
+
+\begin_layout Standard
+El conjunto de datos KDD 1999 representa uno de los benchmarks más utilizados en detección de intrusos.
+ Basado en simulaciones de tráfico de red en un entorno militar,
+ contiene conexiones etiquetadas como normales o como varios tipos de ataques.
+\end_layout
+
+\begin_layout Subsubsection
+Estructura de Características
+\end_layout
+
+\begin_layout Standard
+Las 41 características se organizan en cuatro categorías principales:
+\end_layout
+
+\begin_layout Description
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+Características básicas:
+\end_layout
+
+\end_inset
+
+ Información general de la conexión como duración,
+ protocolo,
+ servicio,
+ estado de la conexión.
+ Ejemplos:
+ 
+\family typewriter
+duration
+\family default
+,
+ 
+\family typewriter
+protocol_type
+\family default
+,
+ 
+\family typewriter
+service
+\family default
+,
+ 
+\family typewriter
+flag
+\family default
+.
+\end_layout
+
+\begin_layout Description
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+Características de contenido:
+\end_layout
+
+\end_inset
+
+ Analizan el contenido de la conexión para detectar intentos de acceso no autorizado.
+ Ejemplos:
+ 
+\family typewriter
+num_failed_logins
+\family default
+,
+ 
+\family typewriter
+logged_in
+\family default
+,
+ 
+\family typewriter
+root_shell
+\family default
+,
+ 
+\family typewriter
+num_compromised
+\family default
+.
+\end_layout
+
+\begin_layout Description
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+Características de tráfico basado en tiempo:
+\end_layout
+
+\end_inset
+
+ Estadísticas de conexiones en ventanas temporales (últimos 2 segundos).
+ Ejemplos:
+ 
+\family typewriter
+count
+\family default
+,
+ 
+\family typewriter
+srv_count
+\family default
+,
+ 
+\family typewriter
+serror_rate
+\family default
+,
+ 
+\family typewriter
+srv_serror_rate
+\family default
+.
+\end_layout
+
+\begin_layout Description
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+Características de tráfico basado en host:
+\end_layout
+
+\end_inset
+
+ Estadísticas de conexiones hacia el mismo host en ventanas más amplias.
+ Ejemplos:
+ 
+\family typewriter
+dst_host_count
+\family default
+,
+ 
+\family typewriter
+dst_host_srv_count
+\family default
+,
+ 
+\family typewriter
+dst_host_same_srv_rate
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Tipos de Ataques
+\end_layout
+
+\begin_layout Standard
+El dataset clasifica los ataques en cuatro categorías:
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+DoS (Denial of Service):
+
+\series default
+ Saturan el sistema impidiendo respuesta a usuarios legítimos.
+ Ej:
+ 
+\family typewriter
+smurf
+\family default
+,
+ 
+\family typewriter
+neptune
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Probe:
+
+\series default
+ Recolección de información sobre la red.
+ Ej:
+ 
+\family typewriter
+satan
+\family default
+,
+ 
+\family typewriter
+portsweep
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+R2L (Remote to Local):
+
+\series default
+ Acceso no autorizado desde máquina remota.
+ Ej:
+ 
+\family typewriter
+guess_passwd
+\family default
+,
+ 
+\family typewriter
+warezclient
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+U2R (User to Root):
+
+\series default
+ Escalada de privilegios desde cuenta local.
+ Ej:
+ 
+\family typewriter
+buffer_overflow
+\family default
+,
+ 
+\family typewriter
+rootkit
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Para este trabajo,
+ nos enfocamos específicamente en la detección de ataques tipo 
+\family typewriter
+backdoor
+\family default
+ versus conexiones 
+\family typewriter
+normales
+\family default
+.
+\end_layout
+
+\begin_layout Subsection
+Árboles de Decisión CART
+\end_layout
+
+\begin_layout Subsubsection
+Fundamentos Teóricos
+\end_layout
+
+\begin_layout Standard
+CART (Classification and Regression Trees) utiliza el coeficiente de Gini como medida de impureza para seleccionar las mejores divisiones:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\text{Gini}(\tau_{d})=1-\sum_{k=1}^{K}p_{k}^{2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+donde 
+\begin_inset Formula $p_{k}$
+\end_inset
+
+ representa la proporción de muestras de clase 
+\begin_inset Formula $k$
+\end_inset
+
+ en el nodo 
+\begin_inset Formula $\tau_{d}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+El Gini ponderado para evaluar una división se calcula como:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{\text{gini}}(\tau_{d},d)=\frac{n_{i}}{n}E_{\text{gini}}(D_{i})+\frac{n_{d}}{n}E_{\text{gini}}(D_{d})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+donde 
+\begin_inset Formula $n_{i}$
+\end_inset
+
+ y 
+\begin_inset Formula $n_{d}$
+\end_inset
+
+ son el número de muestras en las particiones izquierda y derecha respectivamente.
+\end_layout
+
+\begin_layout Subsubsection
+Distancia Jensen-Shannon
+\end_layout
+
+\begin_layout Standard
+Para cuantificar la separabilidad entre distribuciones de clases,
+ utilizamos la distancia Jensen-Shannon:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\text{JS}(P,Q)=\sqrt{\frac{1}{2}[D_{KL}(P||M)+D_{KL}(Q||M)]}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+donde 
+\begin_inset Formula $M=\frac{1}{2}(P+Q)$
+\end_inset
+
+ y 
+\begin_inset Formula $D_{KL}$
+\end_inset
+
+ es la divergencia de Kullback-Leibler.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+% ===========================================================
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Metodología
+\end_layout
+
+\begin_layout Subsection
+Preprocesamiento de Datos
+\end_layout
+
+\begin_layout Subsubsection
+Filtrado y Limpieza
+\end_layout
+
+\begin_layout Standard
+Se filtro los datos para solo incluir en el dataset los tipos de salidas Normal y Back door .
+ A demás Se aplicó codificación one-hot a las variables categóricas para permitir su procesamiento por el algoritmo CART
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/0_FiltroDatos.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Preprocesamiento inicial del dataset
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:code_preprocesamiento"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsection
+Análisis Estadístico Descriptivo
+\end_layout
+
+\begin_layout Subsubsection
+Cálculo de Momentos Estadísticos
+\end_layout
+
+\begin_layout Standard
+Se implementó una función personalizada para calcular los cuatro primeros momentos estadísticos utilizando PyTorch:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/0_MomentosStadisticos.png
+	width 100line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Función para cálculo de momentos estadísticos
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:funcio_code_momentos_estadisticos"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Distancia Jensen-Shannon
+\end_layout
+
+\begin_layout Standard
+Para cada característica se calculó la distancia JS entre las distribuciones de ataques y conexiones normales:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/0_DistanciaJensenShannon.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Implementación de distancia Jensen-Shannon
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:code_jensen_shannon"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Implementación del Árbol CART
+\end_layout
+
+\begin_layout Subsubsection
+Estructura de la Clase Node_CART
+\end_layout
+
+\begin_layout Standard
+A continuación se presenta la estructura completa para representar nodos del árbol:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/01_NodeCartStructure.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Clase Node_CART - Estructura básica
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:code_node_cart"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Cálculo del Coeficiente Gini
+\end_layout
+
+\begin_layout Standard
+Implementación matricial eficiente del coeficiente Gini:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/01_calculoGini.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Cálculo del coeficiente Gini
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:code_gini"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Selección de Mejor División
+\end_layout
+
+\begin_layout Standard
+El corazón del algoritmo CART,
+ el cúal selecciona la mejor característica y umbral:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Imagenes/01_selectBestThresHold.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Selección de mejor característica y umbral
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:code_best_feature"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Construcción Recursiva del Árbol
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/01_createWithChildren.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Construcción recursiva con criterios de parada
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:code_recursive_tree"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Evaluación del Modelo
+\end_layout
+
+\begin_layout Subsubsection
+Función de Evaluación
+\end_layout
+
+\begin_layout Standard
+La función test_CART evalúa el desempeño de un árbol de decisión CART ya entrenado.
+ Para cada muestra del conjunto de datos,
+ obtiene la predicción recorriendo el árbol desde la raíz y la compara con la etiqueta real.
+ Al final calcula la tasa de aciertos (accuracy) como la proporción entre el número de predicciones correctas y el total de muestras,
+ devolviendo un valor entre 0 y 1 que refleja la precisión del modelo.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/01_testCart.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Función de evaluación del árbol
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:code_evaluation"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+% ===========================================================
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Pruebas Unitarias y Validación
+\end_layout
+
+\begin_layout Subsection
+Estrategia de Testing
+\end_layout
+
+\begin_layout Standard
+Se implementó un conjunto exhaustivo de pruebas unitarias para validar cada componente del sistema:
+\end_layout
+
+\begin_layout Subsubsection
+Pruebas para calculate_gini
+\end_layout
+
+\begin_layout Standard
+Estas pruebas unitarias verifican que la función calculate_gini implementada en la clase Node_CART esté calculando correctamente el índice de impureza Gini,
+ que es una métrica fundamental para evaluar la calidad de una división en un árbol de decisión.
+\end_layout
+
+\begin_layout Standard
+El índice Gini mide qué tan mezcladas están las clases en un conjunto:
+\end_layout
+
+\begin_layout Enumerate
+Gini = 0 → el grupo es completamente puro (solo una clase).
+\end_layout
+
+\begin_layout Enumerate
+Gini máximo (0.5 para dos clases) → las clases están balanceadas (impureza máxima).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/02_test_calculateGini.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Pruebas unitarias para Gini
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:code_test_gini"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Justificación de las Pruebas Seleccionadas
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Caso Homogéneo:
+
+\series default
+ 
+\end_layout
+
+\begin_layout Standard
+Está prueba asegura que el nodo reconoce correctamente situaciones puras,
+ fundamentales para decidir que un nodo es hoja y no debe subdividirse.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Relevancia teórica:
+
+\series default
+ Representa el estado de pureza máxima en árboles de decisión 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Criterio de parada:
+
+\series default
+ Los árboles CART usan Gini = 0 como condición terminal 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Detección de errores:
+
+\series default
+ Fallas indican problemas en el cálculo de probabilidades 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Caso Balanceado:
+
+\series default
+ 
+\end_layout
+
+\begin_layout Standard
+Si las clases están perfectamente balanceadas (50%-50%),
+ la impureza Gini debe ser máxima para dos clases.
+ Asegura que la función reconoce correctamente los casos de máxima incertidumbre,
+ lo cual es clave para comparar divisiones durante el entrenamiento del árbol.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Máxima impureza:
+
+\series default
+ Valor de referencia para distribuciones uniformes 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Benchmark:
+
+\series default
+ Gini = 0.5 es el máximo teórico para clasificación binaria 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Validación de normalización:
+
+\series default
+ Confirma cálculo correcto de probabilidades 
+\end_layout
+
+\begin_layout Subsubsection*
+4.1.3.
+ Pruebas para select_best_feature_and_thresh
+\end_layout
+
+\begin_layout Standard
+Estas pruebas unitarias verifican que la función select_best_feature_and_thresh identifique correctamente la mejor característica y el mejor umbral para dividir un conjunto de datos,
+ minimizando el índice Gini.
+ Se evalúa su capacidad para detectar divisiones perfectamente separables en distintos escenarios.
+\end_layout
+
+\begin_layout Standard
+Test 1:
+ Dataset donde la columna 0 permite separar perfectamente las clases con un threshold de 3.0.
+\end_layout
+
+\begin_layout Standard
+Test 2:
+ Dataset donde solo la columna 2 permite separación perfecta con threshold 13.0.
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/02_test_selectBestTresh.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Pruebas unitarias para select_best_feature_and_thresh
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:code_test_gini-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+4.1.4.
+ Justificación de las Pruebas Seleccionadas
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Caso Feature 0 Perfectamen Separador:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Propósito
+\series default
+:
+ Confirmar que la función identifica correctamente la columna que separa completamente las clases.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Relevancia teórica:
+
+\series default
+ Refleja el escenario ideal donde una sola característica permite una división sin mezcla de clases,
+ lo que debe producir un Gini = 0.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Validación de cálculo:
+
+\series default
+ Asegura que la función compute correctamente Gini ponderado y selecciona el umbral óptimo.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Detección de errores:
+
+\series default
+ Fallas indicarían problemas en la lógica de ordenamiento,
+ umbral o cálculo de Gini.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Caso Feature 2 Perfectamente Separador:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Propósito:
+ 
+\series default
+Verificar que la función pueda identificar la mejor columna incluso cuando no es la primera.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Relevancia teórica:
+
+\series default
+ Evalúa la generalidad del método y su capacidad de manejar datasets con múltiples características.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Benchmark:
+
+\series default
+ Confirma que el algoritmo selecciona la característica correcta y el threshold que produce separación perfecta.
+\end_layout
+
+\begin_layout Standard
+Detección de errores:
+ Un resultado incorrecto sugiere errores en la iteración sobre features o cálculo de Gini ponderado.
+\end_layout
+
+\begin_layout Subsubsection*
+4.1.5.
+ Pruebas para create_with_children y test_CART
+\end_layout
+
+\begin_layout Standard
+Estas pruebas verifican la construcción recursiva del árbol CART y la exactitud de las predicciones:
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Caso Test Árbol Perfectamente Separado:
+\end_layout
+
+\begin_layout Standard
+Dataset separable por feature 0 con threshold 2.0.
+\end_layout
+
+\begin_layout Standard
+Se construye el árbol y se evalúa la accuracy,
+ que debe ser 1.0.
+\end_layout
+
+\begin_layout Standard
+Valida que create_with_children genere nodos hoja correctamente y que test_CART calcule correctamente la tasa de aciertos.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Caso Árbol con Min Gini Mayor a 0:
+\end_layout
+
+\begin_layout Standard
+Dataset donde algunas divisiones se detienen prematuramente por el parámetro min_gini.
+\end_layout
+
+\begin_layout Standard
+Se espera accuracy menor que 1 pero mayor que 0,
+ reflejando que el árbol no alcanza separación perfecta.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Justificación:
+ 
+\series default
+comprueba que el parámetro min_gini afecta la profundidad y la división de nodos correctamente.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Caso Árbol con Min Gini = 0:
+\end_layout
+
+\begin_layout Standard
+Igual dataset anterior,
+ pero min_gini = 0.
+\end_layout
+
+\begin_layout Standard
+Se espera accuracy máxima,
+ verificando que el árbol explora todas las divisiones posibles hasta nodos hoja puros.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Relevancia teórica:
+
+\series default
+ asegura que el parámetro min_gini controla correctamente el criterio de parada basado en impureza.
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/02_Test_cart.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Pruebas unitarias para construcción y evaluación del árbol CART
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:code_test_gini-1-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% ===========================================================
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Resultados Experimentales
+\end_layout
+
+\begin_layout Subsection
+Análisis Exploratorio de Datos
+\end_layout
+
+\begin_layout Subsubsection
+Momentos Estadísticos Clase Attack
+\end_layout
+
+\begin_layout Standard
+La Tabla 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:MomentosStadisticosAttack"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ presenta un resumen de los principales momentos estadísticos calculados para la clase Attack:
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/02_momentosStadisticosAttack.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Momentos Estadísticos para la clase Attack
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:MomentosStadisticosAttack"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El análisis de los momentos estadísticos revela un patrón asimétrico en el flujo de datos:
+ los backdoors generan un promedio de 53,667 bytes en src_bytes frente a solo 8,130 bytes en dst_bytes.
+ Esta asimetría (razón 6.6:1) sugiere un comportamiento típico de exfiltración de datos,
+ donde el sistema comprometido envía significativamente más información de la que recibe.
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+
+\series bold
+Patrones de Conectividad
+\end_layout
+
+\begin_layout Standard
+Los backdoors muestran un comportamiento de conectividad selectivo pero distribuido,
+ con valores promedio de 146.4 para dst_host_count y dst_host_srv_count,
+ indicando conexiones a múltiples hosts destino.
+ Sin embargo,
+ los valores bajos de count (3.5) y srv_count (3.8) sugieren que estas conexiones son específicas y no masivas.
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+
+\series bold
+Distribuciones Estadísticas Críticas
+\end_layout
+
+\begin_layout Standard
+El análisis de asimetría (skewness) y curtosis revela distribuciones altamente no-normales en variables clave:
+\end_layout
+
+\begin_layout Itemize
+same_srv_rate:
+ skewness = -10.9,
+ curtosis = 121.8
+\end_layout
+
+\begin_layout Itemize
+dst_host_same_src_port_rate:
+ skewness = 9.2,
+ curtosis = 101.3
+\end_layout
+
+\begin_layout Itemize
+flag_S2:
+ skewness = 13.8,
+ curtosis = 188.6
+\end_layout
+
+\begin_layout Itemize
+diff_srv_rate:
+ skewness = 10.9,
+ curtosis = 123.3
+\end_layout
+
+\begin_layout Standard
+Estas distribuciones extremas indican eventos raros pero significativos,
+ característicos de actividades maliciosas especializadas.
+\end_layout
+
+\begin_layout Subsubsection
+Momentos Estadísticos por Clase Normal
+\end_layout
+
+\begin_layout Standard
+La Tabla 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:MomentosStadisticosNormal"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+ presenta un resumen de los principales momentos estadísticos calculados para la clase Normal:
+\end_layout
+
+\begin_layout Subsubsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/02_moments_Normal.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Momentos Estadísticos para la clase Normal
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:MomentosStadisticosNormal"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+El tráfico normal presenta un patrón inverso al de los backdoors:
+ 3,721 bytes en dst_bytes frente a 1,270 bytes en src_bytes,
+ mostrando una razón de 2.9:1 a favor de los datos recibidos.
+ Este comportamiento es típico de usuarios que consumen servicios web,
+ descargan contenido o reciben respuestas de servidores.
+ La alta variabilidad (std > 36,000 para ambas métricas) indica gran diversidad en los tipos de comunicación.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Comportamiento Temporal
+\end_layout
+
+\begin_layout Standard
+La duración promedio de las conexiones es significativamente mayor que en backdoors:
+ 188.9 segundos comparado con 0.29 segundos.
+ Esto refleja sesiones interactivas genuinas,
+ descargas de archivos,
+ o comunicaciones sostenidas típicas del uso legítimo de la red.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Patrones de Conectividad
+\end_layout
+
+\begin_layout Standard
+Los valores de conectividad muestran un comportamiento más diversificado:
+\end_layout
+
+\begin_layout Itemize
+dst_host_count:
+ 139.6 (similar a backdoors)
+\end_layout
+
+\begin_layout Itemize
+dst_host_srv_count:
+ 203.5 (mayor diversidad de servicios)
+\end_layout
+
+\begin_layout Itemize
+count:
+ 8.85 y srv_count:
+ 11.9 (mayor actividad de conexión)
+\end_layout
+
+\begin_layout Standard
+Esta diversidad refleja el comportamiento natural de usuarios explorando diferentes servicios y destinos.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Distribuciones Estadísticas Extremas
+\end_layout
+
+\begin_layout Standard
+El tráfico normal presenta múltiples variables con distribuciones altamente asimétricas:
+\end_layout
+
+\begin_layout Standard
+Variables con curtosis extrema (> 1000):
+\end_layout
+
+\begin_layout Itemize
+num_file_creations:
+ skewness = 88.1,
+ curtosis = 9,106
+\end_layout
+
+\begin_layout Itemize
+num_access_files:
+ skewness = 26.3,
+ curtosis = 1,401
+\end_layout
+
+\begin_layout Itemize
+service_pop_3:
+ skewness = 33.5,
+ curtosis = 1,121
+\end_layout
+
+\begin_layout Itemize
+•flag_RSTO:
+ skewness = 36.4,
+ curtosis = 1,326
+\end_layout
+
+\begin_layout Itemize
+num_failed_logins:
+ skewness = 130.6,
+ curtosis = 19,414
+\end_layout
+
+\begin_layout Standard
+Estas distribuciones extremas indican que estas actividades son raras pero presentes en el tráfico normal,
+ representando operaciones específicas como creación de archivos,
+ accesos especiales o errores de conexión ocasionales.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Diversidad de Protocolos y Servicios
+\end_layout
+
+\begin_layout Standard
+A diferencia de los backdoors,
+ el tráfico normal muestra:
+\end_layout
+
+\begin_layout Itemize
+protocol_type_tcp:
+ 86.3% (no exclusivo)
+\end_layout
+
+\begin_layout Itemize
+protocol_type_udp:
+ 12.7% (presente)
+\end_layout
+
+\begin_layout Itemize
+service_http:
+ 69.3% (predominante pero no exclusivo)
+\end_layout
+
+\begin_layout Itemize
+service_smtp:
+ 10.9% (correo electrónico)
+\end_layout
+
+\begin_layout Standard
+Esta diversidad refleja el uso variado de servicios de red en operaciones normales.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Estados de Conexión Variados
+\end_layout
+
+\begin_layout Standard
+El tráfico normal presenta mayor diversidad en estados de conexión:
+\end_layout
+
+\begin_layout Itemize
+flag_SF:
+ 94.4% (conexiones exitosas)
+\end_layout
+
+\begin_layout Itemize
+logged_in:
+ 79.3% (no todas las conexiones requieren autenticación)
+\end_layout
+
+\begin_layout Itemize
+Presencia de flags de error:
+ REJ,
+ RSTO,
+ S0,
+ S1
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\series bold
+Indicadores de Actividad Administrativa
+\end_layout
+
+\begin_layout Standard
+El tráfico normal incluye actividades que están ausentes en backdoors:
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+num_root:
+ 0.062 (accesos administrativos legítimos)
+\end_layout
+
+\begin_layout Itemize
+num_file_creations:
+ 0.005 (creación legítima de archivos)
+\end_layout
+
+\begin_layout Itemize
+su_attempted:
+ muy bajo pero presente
+\end_layout
+
+\begin_layout Subsubsection
+Comparación con Backdoors
+\end_layout
+
+\begin_layout Standard
+Diferencias clave respecto a ataques backdoor:
+\end_layout
+
+\begin_layout Standard
+Flujo de datos:
+ Normal recibe más de lo que envía (2.9:1),
+ backdoors envían más (6.6:1)
+\end_layout
+
+\begin_layout Standard
+Duración:
+ Normal 188.9s vs Backdoor 0.29s
+\end_layout
+
+\begin_layout Standard
+Diversidad:
+ Normal usa múltiples protocolos y servicios,
+ backdoors solo TCP/HTTP
+\end_layout
+
+\begin_layout Standard
+Actividad administrativa:
+ Normal tiene actividad root legítima,
+ backdoors no
+\end_layout
+
+\begin_layout Standard
+Errores:
+ Normal presenta errores ocasionales,
+ backdoors operan "limpiamente"
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% ===========================================================
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Análisis Exploratorio de Histogramas
+\end_layout
+
+\begin_layout Standard
+Para cada característica,
+ se gráfico el histograma para categoría ataque (backdoor) y normal,
+ y se computo la distancia de Jensen-Shannon entre ambas aproximaciones de las densidades.
+ A continuación se muestra solamente las características con una Distancia de JS superios a 0.5.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/histograms/hot.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Histograma hot
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:hot"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/histograms/src_bytes.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Histrograma src_byte
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:src_bytes"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/histograms/dst_host_srv_rerror_rate.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Histograma dst_host_srv_rerror_rate
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:dst_host_srv_rerror_rate"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/histograms/srv_error_rate.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Histograma host_rerror_rate
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:host_rerror_rate"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Análisis de Histogramas con Jensen-Shannon Divergence > 0.5
+\end_layout
+
+\begin_layout Standard
+El análisis de los histogramas con alta divergencia Jensen-Shannon (JS > 0.5) revela características distintivas clave para la detección de ataques backdoor en el dataset KDD'99.
+\end_layout
+
+\begin_layout Standard
+Variables con Mayor Poder Discriminativo
+\end_layout
+
+\begin_layout Description
+hot (JS = 0.8132)
+\end_layout
+
+\begin_layout Standard
+Esta variable muestra la diferencia más extrema entre tráfico normal y backdoors:
+\end_layout
+
+\begin_layout Itemize
+Tráfico normal:
+ Concentración casi total en valor 0 (>99% de probabilidad)
+\end_layout
+
+\begin_layout Itemize
+Ataques backdoor:
+ Distribución bimodal con picos en valores 0 y 2,
+ y presencia significativa en valores intermedios hasta 30
+\end_layout
+
+\begin_layout Itemize
+Interpretación:
+ Los backdoors generan más "hotlists" o accesos a recursos críticos del sistema
+\end_layout
+
+\begin_layout Description
+src_bytes (JS = 0.7886)
+\end_layout
+
+\begin_layout Standard
+Patrón de bytes enviados muestra clara diferenciación:
+\end_layout
+
+\begin_layout Itemize
+Tráfico normal:
+ Concentración extrema en valores cercanos a 0
+\end_layout
+
+\begin_layout Itemize
+Ataques backdoor:
+ Distribución más dispersa con cola larga hacia valores altos (hasta 2×10^6 bytes)
+\end_layout
+
+\begin_layout Itemize
+Interpretación:
+ Los backdoors tienden a enviar volúmenes de datos significativamente mayores,
+ confirmando el patrón de exfiltración dst_host_srv_rerror_rate (JS = 0.5896)
+\end_layout
+
+\begin_layout Standard
+Tasa de errores de re-respuesta por servicio en host destino:
+\end_layout
+
+\begin_layout Standard
+• Tráfico normal:
+ Concentración masiva en 0 (~95%) con pequeño pico secundario
+\end_layout
+
+\begin_layout Standard
+• Ataques backdoor:
+ Distribución más uniforme con picos múltiples en valores bajos (0.05-0.15)
+\end_layout
+
+\begin_layout Standard
+• Interpretación:
+ Los backdoors generan patrones de error más diversos,
+ posiblemente por técnicas de evasión
+\end_layout
+
+\begin_layout Description
+dst_host_rerror_rate (JS = 0.5809)
+\end_layout
+
+\begin_layout Standard
+Tasa de errores de re-respuesta en host destino:
+\end_layout
+
+\begin_layout Standard
+• Patrón muy similar al anterior
+\end_layout
+
+\begin_layout Standard
+• Tráfico normal:
+ Dominancia absoluta del valor 0
+\end_layout
+
+\begin_layout Standard
+• Ataques backdoor:
+ Distribución escalonada con múltiples picos pequeños
+\end_layout
+
+\begin_layout Standard
+• Interpretación:
+ Los backdoors provocan más errores de reconexión durante su operación
+\end_layout
+
+\begin_layout Standard
+Variables con Divergencia Moderada pero Significativa
+\end_layout
+
+\begin_layout Description
+srv_rerror_rate (JS = 0.3746)
+\end_layout
+
+\begin_layout Itemize
+Tráfico normal:
+ Concentración extrema en 0
+\end_layout
+
+\begin_layout Itemize
+Ataques backdoor:
+ Mayor dispersión con valores distribuidos hasta 1.0
+\end_layout
+
+\begin_layout Itemize
+Muestra que los backdoors generan más errores a nivel de servicio
+\end_layout
+
+\begin_layout Description
+srv_count (JS = 0.3292)
+\end_layout
+
+\begin_layout Itemize
+Tráfico normal:
+ Decaimiento exponencial desde valores bajos
+\end_layout
+
+\begin_layout Itemize
+Ataques backdoor:
+ Pico muy alto en valor 0,
+ seguido de dispersión más uniforme
+\end_layout
+
+\begin_layout Itemize
+Los backdoors tienden a ser más específicos en cuanto a servicios utilizados
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Patrones de Discriminación Identificados
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Concentración vs Dispersión
+\end_layout
+
+\begin_layout Standard
+El patrón más consistente es que el tráfico normal se concentra masivamente en valores mínimos (típicamente 0),
+ mientras que los backdoors muestran distribuciones más dispersas o multimodales.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Comportamiento de Errores
+\end_layout
+
+\begin_layout Standard
+Los backdoors generan patrones de error más complejos y variados,
+ lo que puede indicar:
+\end_layout
+
+\begin_layout Itemize
+Técnicas de evasión que causan reconexiones
+\end_layout
+
+\begin_layout Itemize
+Comportamiento automatizado que no maneja errores como el tráfico humano
+\end_layout
+
+\begin_layout Itemize
+Operaciones que fuerzan estados no comunes en los servicios
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Volumen de Datos
+\end_layout
+
+\begin_layout Standard
+La variable src_bytes confirma que los backdoors son fundamentalmente diferentes en su patrón de envío de datos,
+ con una cola larga hacia valores altos que representa actividad de exfiltración.
+\end_layout
+
+\begin_layout Standard
+Implicaciones para Detección
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Variables Críticas para Clasificación
+\end_layout
+
+\begin_layout Standard
+Las variables con JS > 0.5 son candidatos ideales para algoritmos de clasificación:
+\end_layout
+
+\begin_layout Enumerate
+hot:
+ Discriminador más potente (JS = 0.8132)
+\end_layout
+
+\begin_layout Enumerate
+src_bytes:
+ Indicador clave de exfiltración (JS = 0.7886)
+\end_layout
+
+\begin_layout Enumerate
+dst_host_srv_rerror_rate y dst_host_rerror_rate:
+ Patrones de error distintivos
+\end_layout
+
+\begin_layout Standard
+Umbrales de Detección
+\end_layout
+
+\begin_layout Standard
+• hot > 0:
+ Altamente sospechoso para backdoors
+\end_layout
+
+\begin_layout Standard
+• src_bytes con cola larga:
+ Indicador de exfiltración
+\end_layout
+
+\begin_layout Standard
+• Tasas de error > 0 en múltiples métricas simultáneamente:
+ Patrón típico de backdoor
+\end_layout
+
+\begin_layout Subsection
+Evaluación del CART
+\end_layout
+
+\begin_layout Subsubsection
+Evaluación con una profundidad máxima de 3 siempre con mínimo 2 observaciones por hoja.
+\end_layout
+
+\begin_layout Standard
+Al evaluar el cart con una profundidad máxima de 3 y como mínimo 2 observaciones obtenemos un accuracy de 0,9997184684684685 y un F1-score de 0,993387773580533.
+\end_layout
+
+\begin_layout Subsection*
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/03_Eval_Max3_Min2.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Evaluación Cart,
+ Profundidad Máxima 3 y observaciones mínimas 2 por hoja
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:eval_cart_1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Evaluación con una profundidad máxima de 4 con mínimo 2 observaciones por hoja.
+\end_layout
+
+\begin_layout Standard
+También al evaluar el cart con una profundidad máxima de 4 y con mínimo 2 observaciones obtenemos un accuracy de 0,9997184684684685 y un F1-score de 0,993387773580533.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/03_Eval_Max4_Min2.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Evaluación Cart,
+ Profundidad Máxima 4 y observaciones mínimas 2 por hoja
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:eval_cart_1-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Evaluación de profundidad máxima de 2 y 3 nodos de 10 particiones
+\end_layout
+
+\begin_layout Standard
+Se evalúo el CART implementado usando 10 particiones aleatorias del conjunto de datos,
+ con un 70 % del conjunto de datos como conjunto de datos de entrenamiento,
+ y el restante 30 % como conjunto de datos de prueba,
+ para profundidades máximas de 2 y 3 nodos.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/03_Eval_10_Partitions.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Resultado de usar 10 particiones aleatorias para 2 y 3 nodos de profundidad
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:eval_cart_3.1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Subsubsection
+Gráfico de la mejor corrida usando F1-Score
+\end_layout
+
+\begin_layout Standard
+El árbol con la mejor corrida según el F1-Score fue de 0.9947527647454073.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Box Boxed
+position "c"
+hor_pos "l"
+has_inner_box 1
+inner_pos "c"
+use_parbox 1
+use_makebox 0
+width "90text%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename Imagenes/03_Eval_GraficoMejorCorrida.png
+	width 90line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Gráfico de mejor corrida según F1-score
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:eval_cart_3.1-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Eficiente de la construcción del árbol y su evaluación,
+ usando la distancia de Jensen-Shannon.
+\end_layout
+
+\begin_layout Standard
+Para aumentar la eficiencia en la construcción y evaluación del CART se podría utilizar la distancia de Jensen-Shannon para filtrar las características,
+ seleccionando solo aquellas con una distancia mayor a 0.3 (o el top-N con mayor JS).
+ Así,
+ el árbol CART solo procesaría y evaluaría splits sobre estas características relevantes,
+ evitando comparaciones innecesarias sobre datos poco informativos.
+ Esto haría más eficiente tanto la construcción como la evaluación del árbol,
+ ya que se reduciría el espacio de búsqueda y el número de operaciones requeridas.
+\end_layout
+
+\begin_layout Section
+Conclusiones
+\end_layout
+
+\begin_layout Standard
+Este trabajo ha demostrado la efectividad de un enfoque integral que combina análisis estadístico descriptivo,
+ distancias Jensen-Shannon,
+ y árboles de decisión CART para la detección de intrusos.
+ 
+\end_layout
+
+\begin_layout Standard
+Las contribuciones específicas incluyen:
+\end_layout
+
+\begin_layout Enumerate
+Implementación completa:
+ Un sistema CART funcional implementado en PyTorch con optimizaciones matriciales que aprovecha capacidades de GPU.
+\end_layout
+
+\begin_layout Enumerate
+Metodología de análisis integral:
+ Combinación de momentos estadísticos,
+ visualizaciones comparativas,
+ y cuantificación de separabilidad mediante Jensen-Shannon.
+\end_layout
+
+\begin_layout Enumerate
+Validación exhaustiva:
+ Evaluación mediante múltiples particiones,
+ métricas complementarias,
+ y análisis de tiempos de ejecución.
+\end_layout
+
+\begin_layout Enumerate
+Propuesta de optimización:
+ Algoritmo híbrido que utiliza JS para pre-filtrado de características,
+ prometiendo mejoras significativas en eficiencia.
+\end_layout
+
+\begin_layout Subsection
+Hallazgos Principales
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Separabilidad Excepcional
+\end_layout
+
+\begin_layout Standard
+Los ataques backdoor y el tráfico normal presentan separabilidad casi perfecta en el subconjunto analizado del KDD99,
+ con la característica src_bytes actuando como discriminador principal (JS = 0.9987).
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Eficacia del Modelo Simple
+\end_layout
+
+\begin_layout Standard
+Un árbol de decisión de profundidad máxima 3 logra rendimiento perfecto (Accuracy = F1 = 1.0000),
+ demostrando que la complejidad adicional no es necesaria para este problema específico.
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,569 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{palatino}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children no
+\language spanish
+\language_package default
+\inputencoding auto-legacy
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style swiss
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Analisis de Datos para Ciberseguridad:
+ Trabajo práctico 1
+\end_layout
+
+\begin_layout Author
+Ph.
+ D.
+ Saúl Calderón Ramírez 
+\begin_inset Newline newline
+\end_inset
+
+Instituto Tecnológico de Costa Rica,
+ 
+\begin_inset Newline newline
+\end_inset
+
+Escuela de Ingeniería en Computación,
+ Programa de Ciencias de Datos,
+\begin_inset Newline newline
+\end_inset
+
+PAttern Recongition and MAchine Learning Group (PARMA-Group)
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Fecha de entrega:
+
+\series default
+ Domingo 17 de Agosto.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Entrega
+\series default
+:
+ Un archivo .zip con el código fuente LaTeX o Lyx,
+ el pdf,
+ y un notebook Jupyter,
+ debidamente documentado.
+ A través del TEC-digital.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Modo de trabajo
+\series default
+:
+ Grupos de 3 personas.
+\end_layout
+
+\begin_layout Abstract
+En el presente trabajo práctico se introducir los arboles de decision por medio de su implementación para resolver un problema práctico en ciberseguridad.
+ 
+\end_layout
+
+\begin_layout Standard
+En el presente trabajo practico se utilizara el 
+\emph on
+dataset KDD99 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://kdd.ics.uci.edu/databases/kddcup99/kddcup99.html
+\end_layout
+
+\end_inset
+
+.
+
+\emph default
+ El conjunto de datos KDD 1999 es uno de los más utilizados para entrenar y evaluar sistemas de detección de intrusos (IDS).
+ Está basado en simulaciones de tráfico de red en un entorno militar y contiene conexiones etiquetadas como normales o como uno de varios tipos de ataques.
+\end_layout
+
+\begin_layout Enumerate
+Categorías de características (features):
+ Las 41 características del dataset se dividen en cuatro grupos principales:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Características básicas (Basic features):
+ Información general de la conexión como duración,
+ protocolo,
+ servicio,
+ estado de la conexión.
+ Ejemplos:
+ duration,
+ protocol_type,
+ service,
+ flag.
+\end_layout
+
+\begin_layout Enumerate
+Características de contenido (Content features):
+ Analizan el contenido de la conexión para detectar intentos de acceso no autorizado.
+ Ejemplos:
+ num_failed_logins,
+ logged_in,
+ root_shell,
+ num_compromised.
+\end_layout
+
+\begin_layout Enumerate
+Características de tráfico basado en tiempo (Time-based traffic features):
+ Estadísticas de conexiones en una ventana de tiempo (por ejemplo,
+ en los últimos 2 segundos).
+ Ejemplos:
+ count,
+ srv_count,
+ serror_rate,
+ srv_serror_rate.
+\end_layout
+
+\begin_layout Enumerate
+Características de tráfico basado en host (Host-based traffic features):
+ Estadísticas de conexiones hacia el mismo host en una ventana más amplia.- Ejemplos:
+ dst_host_count,
+ dst_host_srv_count,
+ dst_host_same_srv_rate.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Las conexiones se etiquetan como normales o como uno de los siguientes tipos de ataque:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+DoS (Denial of Service):
+ Saturar el sistema para que no responda a usuarios legítimos.
+ Ej:
+ smurf,
+ neptune.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Probe:
+ Recolección de información sobre la red.
+ Ej:
+ satan,
+ portsweep.
+ 
+\end_layout
+
+\begin_layout Enumerate
+R2L (Remote to Local):
+ Acceso no autorizado desde una máquina remota.
+ Ej:
+ guess_passwd,
+ warezclient.
+ 
+\end_layout
+
+\begin_layout Enumerate
+U2R (User to Root):
+ Escalada de privilegios desde una cuenta local.
+ Ej:
+ buffer_overflow,
+ rootkit.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Para limitar el alcance del trabajo practico,
+ se analizara y creara un modelo de las conexiones normales y de tipo 
+\emph on
+backdoor
+\emph default
+,
+ tal como se fija en el codigo base.
+\end_layout
+
+\begin_layout Section
+(30 puntos) Análisis descriptivo de las características en el conjunto
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+(15 puntos)
+\series default
+ Por cada característica del espacio de entrada,
+ compute los siguientes momentos estadísticos (usando la implementación de las funciones correspondientes en pytorch,
+ o la implementacion realizada por su equipo):
+ media,
+ desviación estándar,
+ inclinación y kurtosis.
+ Presente tales momentos de forma compacta y analice los resultados.
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+(15 puntos)
+\series default
+ Por cada característica,
+ grafique el histograma para la categoría ataque (
+\emph on
+backdoor
+\emph default
+) y normal,
+ y compute la distancia de Jensen-Shannon entre ambas aproximaciones de las densidades.
+ Realice los gráficos para facilitar la comparación,
+ y analice los resultados.
+\end_layout
+
+\begin_layout Section
+(40 puntos) Implementación de la clasificación multi-clase con árboles de decisión (60 puntos)
+\end_layout
+
+\begin_layout Enumerate
+Para realizar la clasificación entre los ataques 
+\emph on
+backdoor
+\emph default
+ y las conexiones normales,
+ su equipo implementará los árboles de decisión.
+ El código provisto define las clases 
+\emph on
+CART
+\emph default
+ y Node_
+\emph on
+CART
+\emph default
+,
+ las cuales permiten construir un CART binario.
+ Cada nodo del arbol tiene atributos como el 
+\emph on
+feature,
+ 
+\emph default
+el umbral,
+ y el coeficiente de 
+\emph on
+gini 
+\emph default
+(o la entropía) de la partición definida en tal nodo.
+ Además define el atributo 
+\emph on
+dominant_class
+\emph default
+ para el nodo,
+ el cual es el resultado de calcular la clase con mayor cantidad de apariciones en la partición que define al nodo.
+ Finalmente el código incluye la funcionalidad para generar un archivo 
+\emph on
+xml
+\emph default
+ (el cual se puede abrir en cualquier navegador web),
+ para representar fácilmente el árbol.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+
+\series bold
+(10 puntos)
+\series default
+ Implemente el método 
+\emph on
+calculate_gini(data_partition_torch,
+ num_classes = 2),
+ 
+\emph default
+el cual calcule el coeficiente de gini para el conjunto de datos recibido en un tensor de 
+\emph on
+pytorch.
+ 
+\emph default
+Para ello utilice la definición inidicada en el material del curso.
+ Realice una implementacion matricial (prescindiendo de estructuras de repeticion al maximo).
+ Comente la implementacion,
+ detallando cada funcion utilizada en la documentacion externa.
+\begin_inset Formula 
+\[
+E_{\textrm{gini},\rho}\left(\tau_{d}\right)=1-\sum_{k=1}^{K}a_{k}^{2}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Diseñe e implemente al menos 2 pruebas unitarias para esta función.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+
+\series bold
+(20 puntos)
+\series default
+ Implemente los metodos 
+\emph on
+select_best_feature_and_thresh(data_torch,
+ num_classes = 2) y create_with_children,
+ 
+\emph default
+de la clase 
+\emph on
+Node_CART.
+ 
+\emph default
+Este método recibe como parámetros el conjunto de datos en un tensor tipo torch a analizar.
+ El método debe probar de forma extensiva todos los posibles features y sus correspondientes umbrales en los datos recibidos,
+ hasta dar con el menor coeficiente ponderado de gini (o la minima entropía,
+ dependiendo de la función de error a utilizar).
+ 
+\series bold
+Utilice indexación lógica para evitar al máximo el uso de estructuras de repetición tipo 
+\emph on
+for
+\series default
+\emph default
+.
+ Solamente puede usar estructuras de repetición para iterar por los 
+\emph on
+features
+\emph default
+ y posibles umbrales dentro del conjunto de datos.
+ Recuerde que para evaluar una posible partición,
+ es necesario calcular el coeficiente de gini ponderado sugerido para decidir el feature y umbral óptimos es:
+\begin_inset Formula 
+\[
+\overline{E}_{\textrm{gini}}\left(\tau_{d},d\right)=\frac{n_{i}}{n}E_{\textrm{gini}}\left(D_{i}\right)+\frac{n_{d}}{n}E_{\textrm{gini}}\left(D_{d}\right).
+\]
+
+\end_inset
+
+Comente la implementacion,
+ detallando cada funcion utilizada en la documentacion externa.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Diseñe e implemente al menos 2 pruebas unitarias para esta función.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+
+\series bold
+(10 puntos) 
+\series default
+Implemente la función 
+\emph on
+test_CART 
+\emph default
+la cual evalúe un CART previamente entrenado para un conjunto de datos 
+\begin_inset Formula $D$
+\end_inset
+
+ representado en un tensor.
+ Calcule la tasa de aciertos (
+\emph on
+accuracy
+\emph default
+),
+ definida como:
+ 
+\begin_inset Formula 
+\[
+a=\frac{c}{n}
+\]
+
+\end_inset
+
+donde 
+\begin_inset Formula $c$
+\end_inset
+
+ corresponde a las estimaciones correctas,
+ para tal conjunto de datos y retornela.
+ Comente la implementacion,
+ detallando cada funcion utilizada en la documentacion externa.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Diseñe e implemente al menos 2 pruebas unitarias para esta función.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Section
+(30 puntos) Evaluación del CART 
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+(10 puntos)
+\series default
+ Evalúe el CART implementado con el conjunto de datos provisto
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ usándolo como conjunto de datos de entrenamiento y prueba.
+ Reporte la tasa de aciertos y el F1-score promedio de todas las clases,
+ obtenida e incluya el código de la evaluación.
+ Pruebe con una profundidad máxima de 3 y 4 nodos,
+ siempre con mínimo 2 observaciones por hoja.
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+(20 puntos)
+\series default
+ Para 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+una profundidad máxima de 2 y 3 nodos
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+:
+ evalúe el CART implementado usando 10 particiones aleatorias del conjunto de datos,
+ con un 70% del conjunto de datos como conjunto de datos de entrenamiento,
+ y el restante 30% como conjunto de datos de prueba.
+ Reporte una tabla con la tasa de aciertos,
+ F1-score y tiempo de ejecución (para el entrenamiento y la evaluacion,
+ por separado),
+ con el promedio y desviación estándar para las 10 corridas.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Grafique el arbol obtenido para la corrida con mejor F1-score.
+ Analice la estructura de ese arbol usando lo observado en la primer sección.
+ Como se podria hacer mas eficiente la construccion del arbol y su evaluacion,
+ usando la distancia de Jensen-Shannon previamente implementada?
+\end_layout
+
+\end_deeper
+\end_body
+\end_document
