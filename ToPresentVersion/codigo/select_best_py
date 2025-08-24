@@ -1,0 +1,130 @@
+    def create_with_children(self, data_torch, current_depth, min_gini=0.000001):
+        labels = data_torch[:, -1].long()
+        counts = torch.bincount(labels, minlength=self.num_classes).float()
+        self.dominant_class = torch.argmax(counts).item()
+
+        # Si el nodo es puro, convertir en hoja
+        if (counts > 0).sum() == 1:
+            return self
+
+        # Si se alcanzó la profundidad máxima
+        if self.max_depth is not None and current_depth >= self.max_depth:
+            #print("Profundidad máxima alcanzada")
+            return self
+
+        # Si hay menos de min_samples_leaf*2, no se puede dividir más (ambas hojas deben tener al menos min_samples_leaf)
+        if data_torch.shape[0] < self.min_samples_leaf * 2:
+            return self
+
+        # Seleccionar la mejor división
+        feature, thresh, gini = self.select_best_feature_and_thresh(data_torch, self.num_classes)
+        # Si no hay una buena división, convertir en hoja
+        if feature is None or gini < min_gini:
+            return self
+
+        self.feature_num = feature
+        self.threshold_value = thresh
+        self.gini = gini
+
+        # Particionar los datos
+        left_mask = data_torch[:, feature] < thresh
+        right_mask = ~left_mask
+
+        left_partition = data_torch[left_mask]
+        right_partition = data_torch[right_mask]
+
+        # Si alguna partición tiene menos de min_samples_leaf, no dividir
+        if left_partition.shape[0] < self.min_samples_leaf or right_partition.shape[0] < self.min_samples_leaf:
+            return self
+
+        # Crear nodos hijos
+        self.node_left = Node_CART(num_classes=self.num_classes, current_depth=current_depth + 1, min_samples_leaf=self.min_samples_leaf)
+        self.node_right = Node_CART(num_classes=self.num_classes, current_depth=current_depth + 1, min_samples_leaf=self.min_samples_leaf)
+        self.node_left.max_depth = self.max_depth
+        self.node_right.max_depth = self.max_depth
+
+        self.node_left.create_with_children(left_partition, current_depth + 1, min_gini)
+        self.node_right.create_with_children(right_partition, current_depth + 1, min_gini)
+
+        return self
+
+    def select_best_feature_and_thresh(self, data_torch, num_classes=2):
+      """
+      Selecciona la mejor característica (feature) y el mejor umbral (threshold)
+      para dividir un conjunto de datos usando el índice Gini como criterio de impureza.
+
+      Parámetros:
+      -----------
+      data_torch : torch.Tensor
+          Tensor de datos donde cada fila es una muestra y 
+          la última columna contiene las etiquetas de clase.
+      num_classes : int, opcional (default=2)
+          Número total de clases posibles en las etiquetas.
+
+      Retorna:
+      --------
+      best_feature : int o None
+          Índice de la característica que genera la mejor división. 
+          Devuelve None si no es posible dividir.
+      best_thresh : float o None
+          Valor del umbral de división para la característica seleccionada. 
+          Devuelve None si no hay división posible.
+      best_gini : float
+          Valor mínimo del índice Gini ponderado encontrado.
+      """
+
+      # Cantidad de muestras y características (sin incluir la etiqueta)
+      n_samples, n_features = data_torch.shape[0], data_torch.shape[1] - 1
+
+      # Inicializamos los mejores valores como "no encontrados"
+      best_gini = float('inf')
+      best_feature = None
+      best_thresh = None
+
+      # Extraemos las etiquetas (última columna)
+      labels = data_torch[:, -1].long()
+
+      # Recorremos cada característica para evaluar posibles divisiones
+      for feature_idx in range(n_features):
+          feature_values = data_torch[:, feature_idx]
+
+          # Ordenamos los valores de la característica y sus etiquetas asociadas
+          sorted_vals, sorted_idx = torch.sort(feature_values)
+          sorted_labels = labels[sorted_idx]
+
+          # Obtenemos valores únicos consecutivos para evaluar como posibles umbrales
+          uniq_vals, uniq_idx = torch.unique_consecutive(sorted_vals, return_inverse=True)
+          if len(uniq_vals) == 1:
+              continue  # No es posible dividir si todos los valores son iguales
+
+          # Usamos los valores únicos (excepto el último) como posibles umbrales
+          thresholds = uniq_vals[:-1]
+
+          # Evaluamos cada umbral para calcular el índice Gini ponderado
+          for i, thresh in enumerate(thresholds):
+              left_mask = sorted_vals < thresh
+              right_mask = ~left_mask
+
+              # Saltamos divisiones vacías (sin datos en un lado)
+              if left_mask.sum() == 0 or right_mask.sum() == 0:
+                  continue
+
+              # Separamos etiquetas a izquierda y derecha
+              left_labels = sorted_labels[left_mask]
+              right_labels = sorted_labels[right_mask]
+
+              # Calculamos el Gini para cada partición
+              gini_left = self.calculate_gini(left_labels.unsqueeze(1), num_classes)
+              gini_right = self.calculate_gini(right_labels.unsqueeze(1), num_classes)
+
+              # Índice Gini ponderado por el tamaño de cada partición
+              weighted_gini = (left_labels.size(0) * gini_left +
+                              right_labels.size(0) * gini_right) / n_samples
+
+              # Actualizamos si encontramos una mejor división
+              if weighted_gini < best_gini:
+                  best_gini = weighted_gini
+                  best_feature = feature_idx
+                  best_thresh = thresh.item()
+
+      return best_feature, best_thresh, best_gini
