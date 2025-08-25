@@ -204,7 +204,7 @@ maketitle
 
 \begin_layout Abstract
 Este trabajo implementa un sistema completo de detección de intrusos utilizando árboles de decisión CART sobre el dataset KDD99.
- Se desarrolló desde cero una implementación que incluye análisis estadístico descriptivo,
+ Se desarrolló una implementación que incluye análisis estadístico descriptivo,
  cálculo de distancias Jensen-Shannon para selección de características,
  y construcción de árboles de decisión con validación exhaustiva.
  Los resultados demuestran la efectividad del enfoque propuesto para distinguir entre tráfico normal y ataques tipo backdoor,

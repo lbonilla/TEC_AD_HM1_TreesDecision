@@ -3959,7 +3959,7 @@ Hallazgos Principales
 \begin_layout Enumerate
 Separabilidad Excepcional:
  Los ataques backdoor y el tráfico normal presentaron separabilidad casi perfecta en el subconjunto analizado del KDD99.
- La característica src_bytes emergió como el discriminador principal (JS = 0.9987),
+ La característica src_bytes emergió como el discriminador principal (JS = 0.7886)),
  confirmando la utilidad de Jensen–Shannon para identificar variables altamente informativas y coherente con los resultados visualizados en los histogramas comparativos.
 \end_layout
 
